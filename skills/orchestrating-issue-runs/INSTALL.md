@@ -40,6 +40,43 @@ this skill assumes.** This skill assumes the orchestrator merges. If a
 project reserves merges, deploys, or any other act to a human, that is in
 the overlay, and it is the first thing to check before dispatching.
 
+## Run state: `.orchestration/`
+
+Each run keeps its state in `<repo>/.orchestration/<run>/`: `ledger.md`,
+`INTRO.md`, `briefs/` (assembled briefs and the spec parts they were built
+from) and `reports/` (agent reports). A fixed place means the handoff file
+need only name `<run>` for a fresh orchestrator to find the ledger, and two
+projects never invent two layouts. Brief templates have no slot here: standing rules live in this
+skill's `briefs/` blocks, a project's own standing text in `project.md`.
+
+- **Local by default, and the exclude is always written.** Before its first write the orchestrator appends
+  `.orchestration/` to `$(git rev-parse --git-path info/exclude)` — the shared
+  exclude file, which a literal `.git/info/exclude` is not from a linked
+  worktree. Briefs quote issues, rulings and specs, so tracking the folder in
+  a public repo publishes the run's internals.
+- **An exclude does not untrack.** If `git ls-files .orchestration` prints
+  anything and the overlay does not say `run state: tracked`, the orchestrator
+  stops and asks: either the overlay opts in, or the operator untracks it.
+- **Tracking is the overlay's call.** A `project.md` that says `run state:
+  tracked` names a **dedicated state branch, never the default branch** — there
+  the state would move the base under every open PR at each stamp, and reach
+  every fixer's worktree, where it could ride in a PR. The state branch gets its
+  own worktree and `RUN` moves into it; the main checkout stays excluded:
+
+  ```bash
+  git worktree add "$SCRATCH/state-<repo>" <state-branch>   # first run: add -b <state-branch>
+  RUN="$SCRATCH/state-<repo>/.orchestration/<run>"
+  # commit named paths only, -f because the shared exclude hides the folder;
+  # never reports/ — bulky, live only while a card is open, and deleted with
+  # the state worktree
+  git -C "$SCRATCH/state-<repo>" add -f ".orchestration/<run>/ledger.md" \
+    ".orchestration/<run>/INTRO.md" ".orchestration/<run>/briefs"
+  git -C "$SCRATCH/state-<repo>" commit -m "run state: <run>"
+  ```
+- **Nothing that builds goes here.** Worktrees, probes and experiment builds
+  live in `$SCRATCH`, outside the repo: inside it they are picked up by test
+  runners, `grep` and indexers, and their build output gets committed.
+
 ## What this assumes
 
 Check these before Phase 0; the skill will mislead you where they do not hold.
