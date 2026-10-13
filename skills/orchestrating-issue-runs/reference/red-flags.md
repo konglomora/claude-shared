@@ -1,6 +1,6 @@
 # Red flags — stop, you are about to violate the flow
 
-The full set. SKILL.md keeps the ten that fire most often; every other row is
+The full set. SKILL.md samples the five that fire most often; every row is
 here, and none has been deleted. Read this file once at run start, and again at
 any wave boundary where the run has changed shape — a new lane, a scope change,
 an operator ruling.
@@ -35,7 +35,6 @@ the flow.
   full-length run, never a shortened probe's extrapolated ratio
 - Writing a durable design record (an ADR or equivalent) for a question that
   does not change the milestone's Exit
-- A progress stamp that leads with card cost instead of Exit items met / total
 - A follow-on milestone most of whose cards descend from its predecessor's —
   that is a stop signal, not a backlog; the direction question goes to the
   operator before dispatch
@@ -48,30 +47,12 @@ the flow.
 
 ## Waiting, cache and context
 
-- A brief that lets an agent **block** on a command expected to outlast its
-  prompt cache (~5 minutes idle) — the next turn then rewrites the whole
-  context at the cache-write rate; poll instead
-- A poll form given as an example with no maximum — the bound gets stretched
-  toward the Bash timeout to save turns, and past the cache lifetime it costs a
-  full rewrite; say "every poll call returns within four minutes"
-- A live agent's transcript untouched for five minutes — its cache is gone;
-  correct its poll bound rather than reading the silence as health
-- A waiting role briefed without the poll rule because it is "not a fixer" —
-  reviewers re-measuring a suite, screenshot and recording agents, and wrap
-  agents pay the identical rewrite
-- A stall sweep whose interval is longer than the orchestrator's own cache
-  lifetime — the sweep then pays the rewrite it exists to save
-- An agent measured at more than twice its stated ceiling written up as a
-  ledger note — that is a broken instrument, fixed before the next dispatch,
-  not an observation
-- Re-nudging a stalled agent when what it's waiting for hasn't started — remove the dependency instead
-- Pausing the run by waiting for notifications — a pause needs an armed timer or monitor
-- A brief that says "no monitors" without naming the Monitor tool and *unpolled* `run_in_background`
+Rows about waiting and the prompt cache moved to the `cache-warmth` skill's
+Red flags, rows about the context ceiling to the `context-ceiling` skill's, and
+rows about stamps, the sweep, stalls and the quota to the `unattended-run`
+skill's; none was deleted.
+
 - A brief that does not ban the agent dispatching its own subagents — forked helpers can clobber each other's single output file
-- Starting a new card after the operator has called the quota — the wind-down finishes in-flight work, parks green PRs with rebase notes, and demos as a pre-release
-- A fixer past the ~150k ceiling still going — it should have stopped at the ceiling and returned a handoff note
-- Resuming a cold agent that is already over the ceiling — that is a continuation from its handoff note, not a resume
-- Arming a check-up timer per agent — one silent sweep covers every in-flight agent and wakes you only on a stall
 - Starting a wave or a fix round without checking the run's spend against the target
 
 ## Dispatch and briefing
@@ -109,10 +90,8 @@ the flow.
 - Treating the post-merge issue-state read as a gate — that read is racy; read the commit body
 - Merging two green PRs that both touch one counted set — per-branch gates don't compose; serialise or rebase-and-rerun
 - Merging a squash-stacked PR's parent and assuming the child survives it — rebase `--onto`, then re-check the review
-- A progress stamp with a tool call after it — the stamp ends the turn, always
 - Squash-merging `main` into an integration branch — main's closing keywords ride along
 - A deferred register handed over flat instead of grouped by what can close in-branch now
-- A ledger time or progress stamp extrapolated from the previous one instead of read from `date` in that same turn — reckoned stamps drift from the clock
 - Editing a branch and merging it in the same shell call — a failed edit that `set -e` does not catch gets merged
 
 ## Rules, specs and model-facing records
@@ -126,5 +105,4 @@ the flow.
   empty — showing it is an invitation to fill it; remove the field
 - A schema change to an agent-facing record shipped without briefing the
   re-capture with it — the record is part of the prompt, so the change is a prompt change
-- A `sleep`, `until`, `tail -f`, `--watch` or task-output call in the orchestrator's OWN turn — a poll turn at full context; the wait belongs in a background `until` or the sweep (runbook → "The orchestrator never takes a turn to wait")
-- A fresh orchestrator past ~80k before its first dispatch, or a Read of the ledger, the runbook or a brief it wrote (runbook → "The resume packet")
+- A fresh orchestrator past ~80k before its first dispatch, or a Read of the ledger, a phase file or a brief it wrote (phase1-loop.md → "The resume packet")

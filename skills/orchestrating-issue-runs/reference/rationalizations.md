@@ -1,7 +1,9 @@
 # Common rationalizations
 
-The full set. SKILL.md keeps the ten that fire most often; every other row is
-here, and none has been deleted.
+The full set. SKILL.md samples the five that fire most often; every row is
+here, and none has been deleted. Rows about waiting and the prompt cache
+moved to the `cache-warmth` skill, rows about the context ceiling to the
+`context-ceiling` skill, and rows about unattended operation to `unattended-run`.
 
 Each left-hand column is a representative paraphrase — illustrative, not a
 quote — of the sentence an agent tends to reach for on its way to the mistake
@@ -12,11 +14,9 @@ fine.
 
 | Excuse | Reality |
 |---|---|
-| "User said unattended, so start now" | Unattended = no mid-run questions, not no scope gate. Present scope first. |
 | "These two issues are coupled, share the checkout" | Two agents in one tree corrupt each other's work. Worktrees + merge order. |
 | "Review was clean, the reviewer can merge" | Verdict ≠ decision. Gates (human labels, groups, freezes) live above the reviewer. |
 | "The spec gap is obvious, I'll just decide" | Cheap now, contradiction later. Adjudicator + citation + binding comment costs one dispatch. |
-| "Fresh agent is cleaner than resuming" | True below the ceiling — there a resume keeps the task context for a fraction of the price. Above it both paths pay the same cache write, and the resumed one re-reads a bloated context on every turn after it. |
 | "Minor finding, not worth a follow-up" | Silent discards are how the next run re-finds it at a higher cost. |
 | "Tests are green, the constraint works" | Green survives inputs the check is blind to — a symmetric, self-paired or uniformly shifted case. Mutate position, not just structure — and where the rule is about *which of two objects* is involved, a whole-structure transform moves both at once and can stay green while the rule is broken. Move one of them. |
 | "It compiled red first, that's my TDD evidence" | A compile error proves the file was absent. Go green, then mutate the load-bearing decision back to naive and quote that red. |
@@ -27,7 +27,6 @@ fine.
 | "The reviewer told me how to fix it" | A remedy that covers most shapes of a defect can be not merely vacuous but **false at the correct value**, and ship red. Measure it before adopting it; a right finding can carry a wrong fix. |
 | "That's the fifth hole, I'll patch it too" | Most holes in one path are one mistake. Ship an invariant with a named outside, not enumeration N+1. |
 | "The adjudicator says they're independent" | Independent contracts, same file, same function. Re-check file surfaces yourself. |
-| "It's still queued, I'll nudge it to wait properly" | Nothing has started. A better nudge stalls it again — take the gate off the agent. |
 | "The suite count was right last I looked" | It moves whenever a sibling merges. Make every agent re-measure rather than quote a count. |
 | "CI is red, the branch is broken" | A red can be a cancelled job or a CI outage at setup. `gh api .../jobs` before believing a red. |
 | "The agent didn't follow my instruction" | Check whether it was right. A deviation is often correct, and reported up front. The same holds in reverse: a reviewer may retract its own finding — even a blocking one — in the review body after measuring. "You were right and I was wrong" is the gate working, not a reviewer to distrust. |
@@ -47,20 +46,15 @@ fine.
 | "Both PRs are green, so merging both is green" | Per-branch gates don't compose over a counted set. Serialise, or rebase and re-run one against the other. |
 | "Same clone, FETCH_HEAD is fine" | Concurrent agents mutate it mid-read, and nested checkouts go stale while still reading as authoritative — yielding stale counts and a false "the fix never landed" verdict. Resolve the SHA once and pin every read in the brief to it, in the agent's own worktree. |
 | "The parent merged, the child will just retarget" | It can be closed, or silently retargeted onto a base it was never reviewed against. Rebase `--onto`, then content-hash before carrying the review. |
-| "I'll pick the run back up when the notification arrives" | A pause with no armed timer or monitor is a pause that runs long. Arm it, then pause. |
-| "The brief said no monitors" | It read as a Bash rule. Name the Monitor tool, or an agent blocks on one like any other wait. |
 | "It's a rebase, the review stands" | It stands only if the content is identical — prove it with diff-of-diffs, then merge without a third review. |
 | "The spec is silent, so the fixer's convention is fine" | It is a design act. A short adjudication is the cheap way to ratify it or relocate it. |
 | "The suite is the sum of the filtered chunks" | Some runners' filters are exact-match and silently drop everything nested below the named level. Run unfiltered, or split by test class. |
-| "I stamped the progress, then dispatched the next agent" | Text before tool calls may never render, so a run can look silent while reporting diligently. Stamp last. |
 | "The checklist says every item is Met, the demo is done" | Met means the noun shipped. An operator walking the same artifact can find defects the checklist cannot see. Walk it as the user first. |
 | "The constraint check says the requested design is infeasible, so the design must change" | Name the conflict first (drop one constraint at a time). Often the named rule is the defect — an assumption baked into the constraint set — and the design stands. Escalate the *rule*, with options, not the design. |
 | "Two agents measured the same thing and disagree, I'll relay both" | Reconcile arithmetically before relaying: a difference that factors cleanly (a per-item weight times a count) says one input differed between the two measurements. A reconciled number is a fact; two numbers are a question. |
 | "The reviewer can't request changes, so it's a comment" | Same-account PRs refuse `--request-changes`. The verdict is the literal `VERDICT:` line in the body, whatever GitHub calls the review. |
 | "The source data says X, the requested design says Y — one correction" | Check the whole frame: which parts match. A single reported mismatch often hides several wrong input fields; each correction moves a different downstream number. |
-| "It's nearly done, it can push past the ceiling" | "Nearly done" is the estimate most often wrong, so make it evidential: suite green, one named deliverable left, no open decision. That finishes (hard stop ~200k). Anything else writes the note and returns. |
 | "Round 5 is just another round" | A late round on a resumed agent costs a multiple of round 1 for a same-sized fix. Price the round before spending it; when the budget says stop, adjudicate the open findings instead. |
-| "The check-up timer is cheap insurance" | Per agent, on a fixed interval, it re-reads the entire orchestrator context to learn "still alive" — and still finds a stall up to a full interval late. One silent sweep is cheaper and faster. |
 | "I made the edit, so it is in the diff" | Not if you later ran `git checkout -- <that file>` in a mutation-revert loop on it. A fixer can report a corrected paragraph as landed when its own revert has eaten it. Commit the edit before you start mutating that file, or re-read it from `git diff` — never from the edit. |
 | "Two cards decided the same question opposite ways, one of them is wrong" | Look for the experiment that distinguishes them first. Run the one neither card had — restore the removed input, re-run, diff — and a single rule may explain both outcomes; neither card was inconsistent. |
 
@@ -73,9 +67,4 @@ fine.
 | "It's a follow-on milestone, so the backlog says what to do next" | Compute the lineage — what share of its cards descend from the previous milestone's. Above about half, the predecessor did not close its question and this one will re-cut the same defects. That is a direction question for the operator, asked before dispatch, not a wave plan. |
 | "Every ruling deserves a durable design record" | One written for a question that does not change the Exit costs a doc PR, a review, a merge and an operator read, and moves nothing anyone can see. Size the record by the goal. Above roughly two rulings per merged card the spec itself is the defect — propose the change as one batch. |
 | "The rule is in the spec, so the choice is amend it or re-author the inputs" | There is a third, and leave-one-out is what earns it: **demote** the rule — hard to soft, soft to advisory. Demotion is always on the menu when leave-one-out names a rule as the conflict, and where the spec states its own cutting order, quote that order instead of inventing one. |
-| "The command only takes six minutes, I'll wait for it" | Six idle minutes is past a subagent's prompt-cache lifetime, so the next turn rewrites the entire context at the write rate — more than an order of magnitude above what the poll turns would have cost. Detach and poll. |
-| "The command takes ten minutes, so a longer poll bound saves turns" | Each extra poll is one cache read. One bound past the cache lifetime is a full write — about ten reads' worth — so the longer bound can cost more than every poll it saved: a poll form given without a stated maximum gets stretched toward the Bash ceiling and expires the cache repeatedly. The bound is a maximum, never an example. |
-| "This agent isn't a fixer, so the poll rule doesn't apply" | It applies to whoever waits. A reviewer re-measuring a suite, a screenshot agent driving a browser, a recording agent and a wrap agent all pay the identical rewrite — most easily when an ad-hoc brief for a post-run role omits the line. |
-| "The orchestrator is past its ceiling, hand over now" | The orchestrator's ceiling and a fixer's are different numbers for different reasons (iron rule 9). Past the soft one you **offer** a handover at the next natural boundary — a merge, a wave end, a ruling — and the operator decides; you do not stop mid-wave. |
-| "The agent ran to several times its ceiling but it finished, so note it" | An agent measured past twice its ceiling is an instrument failure, not an observation: the rule did not bind, which means every other agent under it is unmeasured too. Fix the instrument before the next dispatch. |
 | "The schema has a field for it, so the model may fill it" | A field the model is meant to leave empty is an invitation to fill it; it does not belong in the record the model sees. And a schema change to an agent-facing record is a **prompt** change — brief it with the re-capture rather than treating it as data plumbing. |
