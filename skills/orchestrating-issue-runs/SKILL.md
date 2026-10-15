@@ -18,9 +18,12 @@ freezes, machine changes, external data, plan changes). Everything else runs in
 the agent loop. **The orchestrator coordinates and decides; it never
 implements and never reviews code itself.**
 
-**Run on the top standard tier (Opus-class).** The orchestrator cannot switch
-its own model: on a pricier tier, ask the operator to run `/model opus` before
-the scope dispatch.
+**Run on the top standard tier (Opus-class) at medium effort.** Hard calls are
+dispatched, but the orchestrator's own plans still need care: at low effort
+they keep the right decision and drop edge cases, order and concrete detail.
+It cannot switch its own model or effort: otherwise, ask the operator to run
+`/model opus` and `/effort medium` before the scope dispatch. A call no rule
+here plainly settles goes to an adjudicator — never reason it out alone.
 
 ## Which file to read, and when
 
@@ -141,14 +144,19 @@ Phase 2  demo, walkthrough, milestone closed, register → operator ruling →
     scope derives the minimum card set that closes it; every brief carries it;
     the stamp leads with it; rulings are sized by it.
 
-## Model tiers (defaults; the scope doc records each issue's)
+## Model tiers and effort (defaults; the scope doc records each issue's)
 
-| Work | Tier |
-|---|---|
-| Approaches, mechanical fixes, standard reviews, re-reviews | cheap/mid (Sonnet-class) |
-| Load-bearing implement/review: core types, schema, cache/graph logic, anything running unattended with write access | top standard (Opus-class) |
-| Design adjudication, contract/freeze drafts, Phase 0 scope | strongest available |
-| Repeat of an already-merged pattern | one combined approach+fix agent, cheap tier |
+Pass the effort with every dispatch (the Agent tool's `effort` setting). A
+fresh agent "one tier up" also goes one effort level up.
+
+| Work | Tier | Effort |
+|---|---|---|
+| Mechanical fixes, re-reviews | cheap/mid (Sonnet-class) | low |
+| Approaches — a wrong one costs every leg after it | cheap/mid (Sonnet-class) | high |
+| Standard reviews | cheap/mid (Sonnet-class) | medium |
+| Load-bearing implement/review: core types, schema, cache/graph logic, anything running unattended with write access | top standard (Opus-class) | high |
+| Design adjudication, contract/freeze drafts, Phase 0 scope | top standard (Opus-class); the strongest tier only for a ruling that comes back unsure | xhigh |
+| Repeat of an already-merged pattern | one combined approach+fix agent, cheap tier | low |
 
 ## Red flags — stop
 
