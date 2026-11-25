@@ -6,6 +6,9 @@
 #   - claude/statusline-command.sh  -> ~/.claude/statusline-command.sh
 #   - claude/subagent-statusline-command.sh
 #                                    -> ~/.claude/subagent-statusline-command.sh
+#   - claude/statusline-grid.sh, claude/subagent-statusline-grid.sh
+#                                    -> ~/.claude/ (the grid layout from backstage;
+#                                      settings.shared.json points the status lines here)
 #   - claude/statusline-lib.sh      -> ~/.claude/statusline-lib.sh
 #                                      (sourced by both status line scripts)
 #   - claude/statusline-progress.sh -> ~/.claude/statusline-progress.sh
@@ -102,7 +105,7 @@ mkdir -p "$CLAUDE_DIR/skills"
 
 # 1. Status line scripts -----------------------------------------------------
 # The session's line, the agent panel's rows, and the helpers both source.
-for f in statusline-lib.sh statusline-command.sh subagent-statusline-command.sh statusline-progress.sh statusline-progress-hook.sh; do
+for f in statusline-lib.sh statusline-command.sh subagent-statusline-command.sh statusline-grid.sh subagent-statusline-grid.sh statusline-progress.sh statusline-progress-hook.sh; do
   log "deploy $f"
   cp "$REPO/claude/$f" "$CLAUDE_DIR/$f"
   chmod +x "$CLAUDE_DIR/$f"
